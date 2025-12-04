@@ -12,7 +12,7 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-<body>
+<body onload="startGame(1)">
 
     <div id="app-container" class="haunted-container">
         <header>
@@ -31,12 +31,7 @@
             </aside>
 
             <section class="game-content" id="game-content-area">
-                <h2>Selamat Datang di Dunia Logika Hantu!</h2>
-                <p>Uji ketahanan mentalmu melawan Hantu Logika. Klik tombol di bawah untuk memulai Level 1!</p>
-                <div class="logika-highlight">
-                    <p>Fokus: **Logika Proposisional (Konjungsi, Disjungsi, Implikasi, Biimplikasi, Negasi)**</p>
-                </div>
-                <button class="start-game-btn" onclick="startGame(1)">START GAME!</button>
+                <p>Memuat Soal...</p>
             </section>
         </main>
 
@@ -49,7 +44,6 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // Gunakan path root
                 navigator.serviceWorker.register('./service-worker.js') 
                     .then(reg => console.log('SW Registered:', reg.scope))
                     .catch(err => console.error('SW Failed:', err));
