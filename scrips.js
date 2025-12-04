@@ -28,7 +28,7 @@ let gameState = {
 
 
 // =======================================================
-// STRUKTUR QUEST/TASK (Pastikan ini utuh dan lengkap)
+// STRUKTUR QUEST/TASK 
 // =======================================================
 
 const QUESTS = {
@@ -39,7 +39,7 @@ const QUESTS = {
             narrative: "Di lorong gelap, kamu harus **Lari (SELAMAT) jika Lampu menyala (P) DAN Pintu terkunci (Q)**. Situasi saat ini: Lampu menyala (**P: T**), tapi Pintu tidak terkunci (**Q: F**).",
             propositions: { P: true, Q: false },
             logic: 'P ∧ Q',
-            answer: LOGIC_OPS['P ∧ Q'](true, false),
+            answer: LOGIC_OPS['P ∧ Q'](true, false), // Jawaban: False
             explanation: (p, q) => `Konjungsi **P ∧ Q** hanya bernilai **True** jika **kedua** proposisi bernilai True. Karena Lampu menyala (P=T) dan Pintu tidak terkunci (Q=F), hasilnya adalah **${toStr(LOGIC_OPS['P ∧ Q'](p, q))}**.`,
         },
         {
@@ -48,7 +48,7 @@ const QUESTS = {
             narrative: "Kunci keselamatanmu: **Lari (SELAMAT) jika Pintu terkunci (Q) ATAU ada Suara aneh (R)**. Situasi: Pintu terbuka (**Q: F**), Suara aneh terdengar (**R: T**).",
             propositions: { Q: false, R: true },
             logic: 'Q ∨ R',
-            answer: LOGIC_OPS['P ∨ Q'](false, true), 
+            answer: LOGIC_OPS['P ∨ Q'](false, true), // Jawaban: True
             explanation: (q, r) => `Disjungsi **Q ∨ R** bernilai **True** jika **setidaknya satu** proposisi bernilai True. Karena Suara aneh terdengar (R=T), hasilnya adalah **${toStr(LOGIC_OPS['P ∨ Q'](q, r))}**.`,
         },
         {
@@ -57,7 +57,7 @@ const QUESTS = {
             narrative: "Kamu hanya akan selamat jika **Lampu TIDAK menyala (¬P)**. Situasi: Lampu menyala (**P: T**).",
             propositions: { P: true },
             logic: '¬P',
-            answer: LOGIC_OPS['¬P'](true),
+            answer: LOGIC_OPS['¬P'](true), // Jawaban: False
             explanation: (p) => `Negasi **¬P** membalik nilai P. Karena Lampu menyala (P=T), maka ¬P adalah **${toStr(LOGIC_OPS['¬P'](p))}** (False).`,
         },
     ],
@@ -68,7 +68,7 @@ const QUESTS = {
             narrative: "Aturan Hantu: Kamu aman **JIKA (P → Q)**. Logika: **JIKA Pintu terkunci (P), MAKA Jendela Tertutup (Q)**. Situasi: Pintu terkunci (**P: T**), tetapi Jendela terbuka (**Q: F**).",
             propositions: { P: true, Q: false },
             logic: 'P → Q',
-            answer: LOGIC_OPS['P → Q'](true, false),
+            answer: LOGIC_OPS['P → Q'](true, false), // Jawaban: False
             explanation: (p, q) => `Implikasi **P → Q** hanya bernilai **False** (melanggar aturan) JIKA sebab (P) True dan akibat (Q) False. Karena P=T dan Q=F, hasilnya adalah **${toStr(LOGIC_OPS['P → Q'](p, q))}**.`,
         },
         {
@@ -77,7 +77,7 @@ const QUESTS = {
             narrative: "Ruangan ini aman (**SELAMAT**) **JIKA dan HANYA JIKA (P ↔ Q)** kondisinya setara. Situasi: Lampu Mati (**P: F**), Pintu Terbuka (**Q: F**).",
             propositions: { P: false, Q: false },
             logic: 'P ↔ Q',
-            answer: LOGIC_OPS['P ↔ Q'](false, false),
+            answer: LOGIC_OPS['P ↔ Q'](false, false), // Jawaban: True
             explanation: (p, q) => `Biimplikasi **P ↔ Q** bernilai **True** JIKA dan HANYA JIKA P dan Q memiliki nilai kebenaran yang **sama**. Karena P=F dan Q=F, hasilnya adalah **${toStr(LOGIC_OPS['P ↔ Q'](p, q))}**.`,
         },
         {
@@ -86,7 +86,7 @@ const QUESTS = {
             narrative: "Tentukan nilai Logika Implikasi: **(Lampu menyala → Pintu terkunci)**. Situasi: Lampu menyala (**P: T**) dan Pintu terkunci (**Q: T**).",
             propositions: { P: true, Q: true },
             logic: 'P → Q',
-            answer: LOGIC_OPS['P → Q'](true, true),
+            answer: LOGIC_OPS['P → Q'](true, true), // Jawaban: True
             explanation: (p, q) => `Implikasi **P → Q** bernilai **True** ketika P=T dan Q=T. Kondisi sebab dan akibat terpenuhi. Hasilnya adalah **${toStr(LOGIC_OPS['P → Q'](p, q))}**.`,
         },
     ],
@@ -97,7 +97,7 @@ const QUESTS = {
             narrative: "Aksi yang **SELALU BENAR (Tautologi)** akan menyelamatkanmu: **P ∨ ¬P**. Tentukan hasil logika ini. (Situasi P=True).",
             propositions: { P: true },
             logic: 'P ∨ ¬P',
-            answer: true, 
+            answer: true, // Jawaban: True
             explanation: (p) => `Ekspresi **P ∨ ¬P** (P atau Bukan P) adalah **Tautologi**, yang berarti hasilnya **selalu True**, terlepas dari nilai P.`,
         },
         {
@@ -106,7 +106,7 @@ const QUESTS = {
             narrative: "Hantu akan melemah **JIKA** logikanya **SELALU SALAH (Kontradiksi)**: **P ∧ ¬P**. Tentukan hasil logika ini. (Situasi P=False).",
             propositions: { P: false },
             logic: 'P ∧ ¬P',
-            answer: false, 
+            answer: false, // Jawaban: False
             explanation: (p) => `Ekspresi **P ∧ ¬P** (P dan Bukan P) adalah **Kontradiksi**, yang berarti hasilnya **selalu False**, terlepas dari nilai P.`,
         },
         {
@@ -115,7 +115,7 @@ const QUESTS = {
             narrative: "Tentukan nilai Logika Rumit: **(P ↔ Q) → (P ∨ Q)**. Situasi: P=T, Q=T.",
             propositions: { P: true, Q: true },
             logic: '(P ↔ Q) → (P ∨ Q)',
-            answer: true,
+            answer: true, // Jawaban: True
             explanation: (p, q) => {
                 const p_bi_q = LOGIC_OPS['P ↔ Q'](p, q); 
                 const p_or_q = LOGIC_OPS['P ∨ Q'](p, q); 
@@ -130,6 +130,7 @@ const QUESTS = {
 // FUNGSI NAVIGASI & START
 // =======================================================
 
+// Fungsi nextTask, startGame, dan gameOver tetap sama
 function nextTask() {
     gameState.currentTask++;
     
@@ -154,8 +155,8 @@ function startGame(level) {
     gameState.currentLevel = level;
     gameState.currentTask = 1;
     gameState.health = 3; 
-    // Panggil updateUI untuk memuat task pertama
-    updateUI(); 
+    // updateUI() TIDAK dipanggil di sini karena Task 1 sudah di HTML statis
+    // Tetapi fungsi ini tetap diperlukan untuk reset dan navigasi level
 }
 
 function gameOver() {
@@ -167,28 +168,19 @@ function gameOver() {
 }
 
 // =======================================================
-// FUNGSI UI & CHECK JAWABAN
+// FUNGSI UI & CHECK JAWABAN (DIPERKUAT)
 // =======================================================
 
 function updateUI() {
+    // Fungsi ini sekarang HANYA dipanggil setelah Task 1 selesai
     const gameContentArea = document.getElementById('game-content-area');
 
-    if (!gameContentArea) {
-        console.error("Elemen 'game-content-area' tidak ditemukan. Gagal memuat UI.");
-        return; // Hentikan fungsi jika elemen tidak ada
-    }
+    if (!gameContentArea) return; 
 
     const healthBar = '❤️'.repeat(gameState.health) + '💀'.repeat(3 - gameState.health);
     const currentQuest = QUESTS[gameState.currentLevel] ? QUESTS[gameState.currentLevel][gameState.currentTask - 1] : null;
 
-    // Update Menu (Unlock Level) - Pengecekan keamanan
-    const level2Btn = document.getElementById('level-2-btn');
-    const level3Btn = document.getElementById('level-3-btn');
-    if (level2Btn) level2Btn.disabled = !gameState.levelProgress[1];
-    if (level3Btn) level3Btn.disabled = !gameState.levelProgress[2];
-
     if (!currentQuest) {
-        // Tampilan Menang Total
         gameContentArea.innerHTML = `
             <h2>🏆 SELAMAT! KAMU MENANG! 🏆</h2>
             <p>Kamu telah menaklukkan ${gameState.hantuName} dan Logika Proposisional. Logikamu sangat kuat!</p>
@@ -197,7 +189,7 @@ function updateUI() {
         return;
     }
     
-    // Logika menampilkan Task
+    // Logika menampilkan Task (sama seperti versi sebelumnya)
     const P = currentQuest.propositions.P;
     const SecondProp = currentQuest.propositions.Q !== undefined ? currentQuest.propositions.Q : currentQuest.propositions.R;
     
@@ -234,19 +226,29 @@ function updateUI() {
         <div id="feedback-area" class="feedback default">Pilih salah satu jawaban di atas.</div>
     `;
 
-    // Merender ulang MathJax setiap kali UI diperbarui
-    if (window.MathJax) {
-        window.MathJax.typeset();
-    }
+    if (window.MathJax) window.MathJax.typeset();
 }
 
 function checkAnswer(userAnswer) {
-    const currentQuest = QUESTS[gameState.currentLevel][gameState.currentTask - 1];
+    // Kunci di sini: Pastikan game state diinisialisasi untuk Task 1
+    if (gameState.currentLevel === 1 && gameState.currentTask === 1) {
+        // Karena Task 1 dimuat statis, kita panggil startGame(1) di sini
+        // untuk memastikan gameState terdaftar (jika belum)
+        // Note: Ini hanya untuk memastikan gameState siap saat tombol ditekan pertama kali
+        startGame(1);
+    }
+    
+    const currentQuest = QUESTS[gameState.currentLevel] ? QUESTS[gameState.currentLevel][gameState.currentTask - 1] : null;
     const feedbackArea = document.getElementById('feedback-area');
     
     // Pengecekan keamanan
-    if (!currentQuest || !feedbackArea) return; 
+    if (!currentQuest || !feedbackArea) {
+        feedbackArea.className = "feedback wrong";
+        feedbackArea.innerHTML = "❌ **ERROR:** Data soal gagal dimuat. Coba refresh halaman dan bersihkan cache.";
+        return; 
+    }
 
+    // Lanjutkan logika checkAnswer yang sama
     document.getElementById('btn-true').disabled = true;
     document.getElementById('btn-false').disabled = true;
 
@@ -291,3 +293,8 @@ function checkAnswer(userAnswer) {
         `;
     }
 }
+
+
+// Tambahkan inisialisasi awal saat script dimuat
+// Ini memastikan startGame(1) dipanggil segera setelah script.js selesai dimuat
+startGame(1);
