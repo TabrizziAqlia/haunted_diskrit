@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logika Bertahan Hidup</title>
+    <title>Logika Bertahan Hidup (Hantu) PWA</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#212121">
@@ -19,7 +19,7 @@
             <h1>Logika Bertahan Hidup (Hantu) 👻</h1>
             <p>Selamat datang, pencari logika! Untuk memulai, masukkan namamu.</p>
             <input type="text" id="username-input" placeholder="Masukkan Nama Depanmu" maxlength="20">
-            <button onclick="loginAndStart()">Masuk & Mulai Game</button>
+            <button onclick="loginAndStart()">Masuk & Lanjut ke Lobby</button>
             <p class="hantu-info">Logikamu akan diuji oleh Hantu yang sesuai dengan inisialmu.</p>
         </div>
     </div>
@@ -41,16 +41,17 @@
             </aside>
 
             <section class="game-content" id="game-content-area">
-                <h2>Selamat Datang!</h2>
-                <p>Pilih level di menu samping untuk memulai. Setiap level memiliki 3 tugas. Jawab dengan benar untuk menaklukkan Logika Hantu!</p>
+                <h2>Selamat Datang di Dunia Logika Hantu!</h2>
+                <p>Uji ketahanan mentalmu melawan Hantu Logika. Setiap keputusan yang kamu buat akan menentukan hidup atau matimu. Pilih level di menu samping, atau klik tombol di bawah untuk memulai Level 1!</p>
                 <div class="logika-highlight">
                     <p>Fokus: **Logika Proposisional (Konjungsi, Disjungsi, Implikasi, Biimplikasi, Negasi)**</p>
                 </div>
+                <button class="start-game-btn" onclick="startGame(1)">START GAME!</button>
             </section>
         </main>
 
         <footer>
-            <p>© Game Logika-Hantu dibuat oleh TabrizziAqlia</p>
+            <p>© Game Logika-Hantu dibuat oleh TabrizziAqlia-PWA</p>
         </footer>
     </div>
 
