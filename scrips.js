@@ -28,8 +28,7 @@ let gameState = {
 
 
 // =======================================================
-// STRUKTUR QUEST/TASK 
-// (ISI LEVEL 2 DAN 3 HARUS DIMASUKKAN KEMBALI AGAR KODE LENGKAP)
+// STRUKTUR QUEST/TASK (Pastikan ini utuh dan lengkap)
 // =======================================================
 
 const QUESTS = {
@@ -172,16 +171,25 @@ function gameOver() {
 // =======================================================
 
 function updateUI() {
+    const gameContentArea = document.getElementById('game-content-area');
+
+    if (!gameContentArea) {
+        console.error("Elemen 'game-content-area' tidak ditemukan. Gagal memuat UI.");
+        return; // Hentikan fungsi jika elemen tidak ada
+    }
+
     const healthBar = '❤️'.repeat(gameState.health) + '💀'.repeat(3 - gameState.health);
     const currentQuest = QUESTS[gameState.currentLevel] ? QUESTS[gameState.currentLevel][gameState.currentTask - 1] : null;
 
-    // Update Menu (Unlock Level)
-    document.getElementById('level-2-btn').disabled = !gameState.levelProgress[1];
-    document.getElementById('level-3-btn').disabled = !gameState.levelProgress[2];
+    // Update Menu (Unlock Level) - Pengecekan keamanan
+    const level2Btn = document.getElementById('level-2-btn');
+    const level3Btn = document.getElementById('level-3-btn');
+    if (level2Btn) level2Btn.disabled = !gameState.levelProgress[1];
+    if (level3Btn) level3Btn.disabled = !gameState.levelProgress[2];
 
     if (!currentQuest) {
         // Tampilan Menang Total
-        document.getElementById('game-content-area').innerHTML = `
+        gameContentArea.innerHTML = `
             <h2>🏆 SELAMAT! KAMU MENANG! 🏆</h2>
             <p>Kamu telah menaklukkan ${gameState.hantuName} dan Logika Proposisional. Logikamu sangat kuat!</p>
             <button id="restart-final-btn" onclick="location.reload()">Mulai Game Baru</button>
@@ -189,9 +197,7 @@ function updateUI() {
         return;
     }
     
-    // LOGIKA LOBBY TELAH DIHILANGKAN. Aplikasi langsung merender Task.
-    
-
+    // Logika menampilkan Task
     const P = currentQuest.propositions.P;
     const SecondProp = currentQuest.propositions.Q !== undefined ? currentQuest.propositions.Q : currentQuest.propositions.R;
     
@@ -201,7 +207,7 @@ function updateUI() {
 
     const logicDisplay = currentQuest.logic.replace(/R/g, 'Q');
 
-    document.getElementById('game-content-area').innerHTML = `
+    gameContentArea.innerHTML = `
         <div class="status-bar">
             <span>Level: ${gameState.currentLevel} / 3</span>
             <span>Task: ${gameState.currentTask} / ${gameState.maxTasks}</span>
@@ -238,6 +244,9 @@ function checkAnswer(userAnswer) {
     const currentQuest = QUESTS[gameState.currentLevel][gameState.currentTask - 1];
     const feedbackArea = document.getElementById('feedback-area');
     
+    // Pengecekan keamanan
+    if (!currentQuest || !feedbackArea) return; 
+
     document.getElementById('btn-true').disabled = true;
     document.getElementById('btn-false').disabled = true;
 
