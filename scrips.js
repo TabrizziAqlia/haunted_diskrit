@@ -1,8 +1,7 @@
 // =======================================================
-// KONFIGURASI HANTU DAN PROPOSISI (DISIMPAN, TAPI TIDAK DIPAKAI LAGI)
+// KONFIGURASI HANTU DAN PROPOSISI
 // =======================================================
 
-// Data HANTU_MAPPING dan LOGIC_OPS tetap disimpan
 const LOGIC_OPS = {
     '¬P': (p, q) => !p,
     'P ∧ Q': (p, q) => p && q,
@@ -23,13 +22,14 @@ let gameState = {
     maxTasks: 3,
     health: 3,
     levelProgress: { 1: false, 2: false, 3: false },
-    username: "Pemain", // Default name karena tidak ada login
-    hantuName: "Hantu Logika" // Default hantu
+    username: "Pemain", 
+    hantuName: "Hantu Logika" 
 };
 
 
 // =======================================================
-// STRUKTUR QUEST/TASK (Sama seperti sebelumnya)
+// STRUKTUR QUEST/TASK 
+// (ISI LEVEL 2 DAN 3 HARUS DIMASUKKAN KEMBALI AGAR KODE LENGKAP)
 // =======================================================
 
 const QUESTS = {
@@ -62,11 +62,70 @@ const QUESTS = {
             explanation: (p) => `Negasi **¬P** membalik nilai P. Karena Lampu menyala (P=T), maka ¬P adalah **${toStr(LOGIC_OPS['¬P'](p))}** (False).`,
         },
     ],
-    // Level 2 dan 3 tetap sama
-    2: [ /* ... Quest 4, 5, 6 */ ],
-    3: [ /* ... Quest 7, 8, 9 */ ],
+    2: [ 
+        {
+            task: 1,
+            title: "Kunci 4: Jendela Tertutup (Implikasi)",
+            narrative: "Aturan Hantu: Kamu aman **JIKA (P → Q)**. Logika: **JIKA Pintu terkunci (P), MAKA Jendela Tertutup (Q)**. Situasi: Pintu terkunci (**P: T**), tetapi Jendela terbuka (**Q: F**).",
+            propositions: { P: true, Q: false },
+            logic: 'P → Q',
+            answer: LOGIC_OPS['P → Q'](true, false),
+            explanation: (p, q) => `Implikasi **P → Q** hanya bernilai **False** (melanggar aturan) JIKA sebab (P) True dan akibat (Q) False. Karena P=T dan Q=F, hasilnya adalah **${toStr(LOGIC_OPS['P → Q'](p, q))}**.`,
+        },
+        {
+            task: 2,
+            title: "Kunci 5: Ruangan Aman (Biimplikasi)",
+            narrative: "Ruangan ini aman (**SELAMAT**) **JIKA dan HANYA JIKA (P ↔ Q)** kondisinya setara. Situasi: Lampu Mati (**P: F**), Pintu Terbuka (**Q: F**).",
+            propositions: { P: false, Q: false },
+            logic: 'P ↔ Q',
+            answer: LOGIC_OPS['P ↔ Q'](false, false),
+            explanation: (p, q) => `Biimplikasi **P ↔ Q** bernilai **True** JIKA dan HANYA JIKA P dan Q memiliki nilai kebenaran yang **sama**. Karena P=F dan Q=F, hasilnya adalah **${toStr(LOGIC_OPS['P ↔ Q'](p, q))}**.`,
+        },
+        {
+            task: 3,
+            title: "Kunci 6: Rantai Keputusan",
+            narrative: "Tentukan nilai Logika Implikasi: **(Lampu menyala → Pintu terkunci)**. Situasi: Lampu menyala (**P: T**) dan Pintu terkunci (**Q: T**).",
+            propositions: { P: true, Q: true },
+            logic: 'P → Q',
+            answer: LOGIC_OPS['P → Q'](true, true),
+            explanation: (p, q) => `Implikasi **P → Q** bernilai **True** ketika P=T dan Q=T. Kondisi sebab dan akibat terpenuhi. Hasilnya adalah **${toStr(LOGIC_OPS['P → Q'](p, q))}**.`,
+        },
+    ],
+    3: [ 
+        {
+            task: 1,
+            title: "Kunci 7: Tautologi (Kebenaran Universal)",
+            narrative: "Aksi yang **SELALU BENAR (Tautologi)** akan menyelamatkanmu: **P ∨ ¬P**. Tentukan hasil logika ini. (Situasi P=True).",
+            propositions: { P: true },
+            logic: 'P ∨ ¬P',
+            answer: true, 
+            explanation: (p) => `Ekspresi **P ∨ ¬P** (P atau Bukan P) adalah **Tautologi**, yang berarti hasilnya **selalu True**, terlepas dari nilai P.`,
+        },
+        {
+            task: 2,
+            title: "Kunci 8: Kontradiksi (Kelemahan Hantu)",
+            narrative: "Hantu akan melemah **JIKA** logikanya **SELALU SALAH (Kontradiksi)**: **P ∧ ¬P**. Tentukan hasil logika ini. (Situasi P=False).",
+            propositions: { P: false },
+            logic: 'P ∧ ¬P',
+            answer: false, 
+            explanation: (p) => `Ekspresi **P ∧ ¬P** (P dan Bukan P) adalah **Kontradiksi**, yang berarti hasilnya **selalu False**, terlepas dari nilai P.`,
+        },
+        {
+            task: 3,
+            title: "Kunci 9: Implikasi Tersembunyi",
+            narrative: "Tentukan nilai Logika Rumit: **(P ↔ Q) → (P ∨ Q)**. Situasi: P=T, Q=T.",
+            propositions: { P: true, Q: true },
+            logic: '(P ↔ Q) → (P ∨ Q)',
+            answer: true,
+            explanation: (p, q) => {
+                const p_bi_q = LOGIC_OPS['P ↔ Q'](p, q); 
+                const p_or_q = LOGIC_OPS['P ∨ Q'](p, q); 
+                const hasil = LOGIC_OPS['P → Q'](p_bi_q, p_or_q); 
+                return `Logika dipecah: 1. (P ↔ Q) adalah ${toStr(p_bi_q)}. 2. (P ∨ Q) adalah ${toStr(p_or_q)}. 3. Hasil akhirnya (Implikasi) ${toStr(p_bi_q)} → ${toStr(p_or_q)} adalah **${toStr(hasil)}**.`;
+            }
+        }
+    ]
 };
-
 
 // =======================================================
 // FUNGSI NAVIGASI & START
@@ -130,8 +189,7 @@ function updateUI() {
         return;
     }
     
-    // Perubahan Penting: Jika Task 1, tampilkan Task 1. TIDAK ADA LAGI LOGIKA LOBBY.
-    // Jika tombol Start dipanggil, langsung lompat ke sini:
+    // LOGIKA LOBBY TELAH DIHILANGKAN. Aplikasi langsung merender Task.
     
 
     const P = currentQuest.propositions.P;
@@ -224,9 +282,3 @@ function checkAnswer(userAnswer) {
         `;
     }
 }
-
-// Inisialisasi saat halaman dimuat
-document.addEventListener('DOMContentLoaded', () => {
-    // Karena tidak ada login, pastikan tampilan awal adalah Lobby.
-    // Tidak ada fungsi startGame(1) di sini, biarkan tombol START GAME yang memanggilnya.
-});
