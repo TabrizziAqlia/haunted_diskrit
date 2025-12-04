@@ -36,8 +36,9 @@ const HANTU_MAPPING = {
 // GAME STATE
 // =======================================================
 let gameState = {
-    currentLevel: 1,
-    currentTask: 1,
+    // Diubah ke 0 agar saat login, statusnya adalah 'belum dimulai'
+    currentLevel: 0, 
+    currentTask: 0, 
     maxTasks: 3,
     health: 3,
     levelProgress: { 1: false, 2: false, 3: false },
@@ -64,7 +65,7 @@ const getPropValue = (prop, value) => {
     // Sesuaikan agar variabel P, Q, R di narasi sesuai dengan konteks
     if (prop === 'P') return `Lampu menyala (P=${toStr(value)})`;
     if (prop === 'Q') return `Pintu terkunci (Q=${toStr(value)})`;
-    if (prop === 'R' || prop === 'Q') return `Suara aneh terdengar (Q=${toStr(value)})`; // Menggunakan Q untuk R di narasi
+    if (prop === 'R' || prop === 'Q') return `Suara aneh terdengar (Q=${toStr(value)})`; 
     return '';
 };
 
@@ -170,7 +171,7 @@ const QUESTS = {
 };
 
 // =======================================================
-// FUNGSI NAVIGASI & LOGIN
+// FUNGSI NAVIGASI & LOGIN (PERBAIKAN UTAMA DI SINI)
 // =======================================================
 
 function getHantuName(username) {
@@ -193,12 +194,12 @@ function loginAndStart() {
     gameState.username = username;
     gameState.hantuName = getHantuName(username);
 
-    // Tampilkan aplikasi dan sembunyikan login
+    // 1. Tampilkan aplikasi dan sembunyikan login
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('app-container').classList.remove('hidden');
     document.getElementById('hantu-greeting').innerText = `Halo, ${gameState.username}! Lawanmu: ${gameState.hantuName}.`;
     
-    // TIDAK memanggil startGame(1) di sini, Tombol START GAME! di lobby akan memanggilnya.
+    // TIDAK memanggil updateUI() di sini. Konten lobby awal sudah ada di HTML.
 }
 
 function nextTask() {
@@ -219,6 +220,7 @@ function nextTask() {
 }
 
 function startGame(level) {
+    // Memastikan Level 1 bisa langsung dimulai tanpa cek progress
     if (level > 1 && !gameState.levelProgress[level - 1]) {
         alert(`Selesaikan Level ${level - 1} terlebih dahulu!`);
         return;
@@ -234,17 +236,21 @@ function gameOver() {
     document.getElementById('game-content-area').innerHTML = `
         <h2>☠️ GAME OVER ☠️</h2>
         <p>Logikamu gagal. ${gameState.hantuName} menangkapmu!</p>
-        <button onclick="location.reload()">Coba Lagi (Restart)</button>
+        <button class="start-game-btn" onclick="location.reload()">Coba Lagi (Restart)</button>
     `;
 }
 
 // =======================================================
-// FUNGSI UI & CHECK JAWABAN
+// FUNGSI UI & CHECK JAWABAN (PERBAIKAN UTAMA DI SINI)
 // =======================================================
 
 function updateUI() {
     const healthBar = '❤️'.repeat(gameState.health) + '💀'.repeat(3 - gameState.health);
-    const currentQuest = QUESTS[gameState.currentLevel] ? QUESTS[gameState.currentLevel][gameState.currentTask - 1] : null;
+    
+    // Hanya mencoba mendapatkan quest jika level dan task > 0 (game sudah dimulai)
+    const currentQuest = gameState.currentLevel > 0 && gameState.currentTask > 0 
+        ? QUESTS[gameState.currentLevel] ? QUESTS[gameState.currentLevel][gameState.currentTask - 1] : null
+        : null;
 
     // Update Menu (Unlock Level)
     document.getElementById('level-2-btn').disabled = !gameState.levelProgress[1];
@@ -252,40 +258,26 @@ function updateUI() {
 
     if (!currentQuest) {
         // Tampilan Menang Total jika semua level selesai
-        document.getElementById('game-content-area').innerHTML = `
-            <h2>🏆 SELAMAT! KAMU MENANG! 🏆</h2>
-            <p>Kamu telah menaklukkan ${gameState.hantuName} dan Logika Proposisional. Logikamu sangat kuat!</p>
-            <button id="restart-final-btn" onclick="location.reload()">Mulai Game Baru</button>
-        `;
-        return;
-    }
-    
-    // Ini adalah logika untuk menampilkan Layar LOBBY jika game baru dimulai
-    if (gameState.currentLevel === 1 && gameState.currentTask === 1 && !gameState.levelProgress[1] && gameState.username) {
-        if (!document.querySelector('.start-game-btn')) {
-             // Hanya render ulang lobby jika kontennya belum ada
-             document.getElementById('game-content-area').innerHTML = `
-                <h2>Selamat Datang di Dunia Logika Hantu!</h2>
-                <p>Uji ketahanan mentalmu melawan Hantu Logika. Setiap keputusan yang kamu buat akan menentukan hidup atau matimu. Pilih level di menu samping, atau klik tombol di bawah untuk memulai Level 1!</p>
-                <div class="logika-highlight">
-                    <p>Fokus: **Logika Proposisional (Konjungsi, Disjungsi, Implikasi, Biimplikasi, Negasi)**</p>
-                </div>
-                <button class="start-game-btn" onclick="startGame(1)">START GAME!</button>
-             `;
+        if (gameState.levelProgress[3]) {
+            document.getElementById('game-content-area').innerHTML = `
+                <h2>🏆 SELAMAT! KAMU MENANG! 🏆</h2>
+                <p>Kamu telah menaklukkan ${gameState.hantuName} dan Logika Proposisional. Logikamu sangat kuat!</p>
+                <button class="start-game-btn" onclick="location.reload()">Mulai Game Baru</button>
+            `;
         }
-        return;
+        return; // Keluar jika tidak ada quest yang sedang aktif (tetap di lobby/layar menang)
     }
-
-
-    const P = currentQuest.propositions.P;
-    // Menggunakan Q untuk proposisi kedua, baik itu Q atau R di object QUESTS
-    const SecondProp = currentQuest.propositions.Q !== undefined ? currentQuest.propositions.Q : currentQuest.propositions.R;
     
+    // Lanjutkan menampilkan Task jika currentQuest ada
+    const P = currentQuest.propositions.P;
+    // Mengambil proposisi kedua, baik Q atau R
+    const SecondProp = currentQuest.propositions.Q !== undefined ? currentQuest.propositions.Q : currentQuest.propositions.R;
+
     let variableDisplay = `**P=${toStr(P)}**`;
     if (currentQuest.propositions.Q !== undefined) variableDisplay += `, **Q=${toStr(currentQuest.propositions.Q)}**`;
     if (currentQuest.propositions.R !== undefined) variableDisplay += `, **R=${toStr(currentQuest.propositions.R)}**`;
 
-    // Pastikan simbol R di tampilan MathJax diganti menjadi Q agar MathJax bisa merender simbol Disjungsi (∨)
+    // Mengganti R menjadi Q untuk memastikan rendering MathJax untuk simbol Disjungsi (∨)
     const logicDisplay = currentQuest.logic.replace(/R/g, 'Q');
 
     document.getElementById('game-content-area').innerHTML = `
@@ -303,9 +295,9 @@ function updateUI() {
         </div>
         
         <div class="narrative-box">
-             <p> **NARASI SITUASI:** ${currentQuest.narrative}</p>
+            <p> **NARASI SITUASI:** ${currentQuest.narrative}</p>
         </div>
-       
+        
         <p><h3>Pilih Hasil Logika Kunci ($${logicDisplay}$) untuk **SELAMAT**:</h3></p>
         <div class="options-container">
             <button id="btn-true" onclick="checkAnswer(true)">True (T) / Lari</button>
